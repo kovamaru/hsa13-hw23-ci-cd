@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build and run tests
-        run: ./mvnw clean verify
+        run: mvn clean verify
 
   build-docker:
     needs: build-and-test
