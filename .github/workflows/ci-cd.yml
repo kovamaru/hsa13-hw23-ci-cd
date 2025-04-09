@@ -20,21 +20,34 @@ jobs:
           distribution: 'temurin'
 
       - name: Build and run tests
-        run: mvn clean verify
+        run: |
+          cd app
+          mvn clean verify
 
   build-docker:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
       - name: Build JAR
-        run: ./mvnw clean package -DskipTests
+        run: |
+          cd app
+          mvn clean package -DskipTests
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}/ciapp:latest .
+        run: docker build -t ghcr.io/${{ github.repository }}/ciapp:latest ./app
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
